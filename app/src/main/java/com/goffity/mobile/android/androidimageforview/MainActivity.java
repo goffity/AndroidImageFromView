@@ -1,15 +1,22 @@
 package com.goffity.mobile.android.androidimageforview;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = MainActivity.class.getSimpleName();
 
     private Button button;
+    private Button btnCreateImage;
     private TextView textViewTimeStamp;
 
     @Override
@@ -34,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         textViewTimeStamp = findViewById(R.id.textViewTimeStamp);
 
         button = findViewById(R.id.button);
+        btnCreateImage = findViewById(R.id.btnCreateImage);
     }
 
     @Override
@@ -51,15 +60,23 @@ public class MainActivity extends AppCompatActivity {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(
                 new Date());
 
+        final String fileName = "Screenshots_" + timeStamp + ".png";
+
         textViewTimeStamp.setText(timeStamp);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                store(getScreenShot(view), "Screenshots_" + timeStamp + ".png");
+                store(getScreenShot(view), fileName);
             }
         });
 
+        btnCreateImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                store(createClusterBitmap(getApplicationContext()), fileName);
+            }
+        });
 
     }
 
@@ -81,10 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
     public Bitmap getScreenShot(View view) {
         Log.i(TAG, "getScreenShot()");
+        Log.d(TAG, "view: " + view);
         View screenView = view.getRootView();
         screenView.setDrawingCacheEnabled(true);
-        Log.d(TAG, "getScreenShot: " + screenView);
-        Log.d(TAG, "getScreenShot: " + screenView.getDrawingCache());
+        Log.d(TAG, "screenView: " + screenView);
+        Log.d(TAG, "screenView.getDrawingCache(): " + screenView.getDrawingCache());
         Bitmap bitmap = Bitmap.createBitmap(screenView.getDrawingCache());
         screenView.setDrawingCacheEnabled(false);
         return bitmap;
@@ -110,6 +128,107 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Bitmap createClusterBitmap(Context context) {
+        View cluster = LayoutInflater.from(context).inflate(R.layout.receipt, null, false);
+
+        RelativeLayout.LayoutParams layoutParams;
+
+        RelativeLayout relativeLayout = cluster.findViewById(R.id.relativeLayoutReceipt);
+        relativeLayout.setBackgroundColor(getResources().getColor(R.color.colorAccent, null));
+
+        ImageView imageView = cluster.findViewById(R.id.imgLogo);
+        imageView.setImageResource(R.mipmap.ic_launcher_round);
+        layoutParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        imageView.setLayoutParams(layoutParams);
+        imageView.setAdjustViewBounds(true);
+
+        TextView txtViewShop = cluster.findViewById(R.id.txtShop);
+        txtViewShop.setText(getResources().getString(R.string.textview_shop_th));
+        txtViewShop.setGravity(Gravity.END);
+        RelativeLayout.LayoutParams textViewShopLayoutParams = (RelativeLayout.LayoutParams) txtViewShop.getLayoutParams();
+        textViewShopLayoutParams.addRule(RelativeLayout.ALIGN_RIGHT, RelativeLayout.TRUE);
+        txtViewShop.setLayoutParams(textViewShopLayoutParams);
+
+        TextView textViewShopAddr = cluster.findViewById(R.id.txtShopAddr);
+        textViewShopAddr.setText(getResources().getString(R.string.textview_shop_addr_th));
+
+        EditText editText = cluster.findViewById(R.id.editText);
+        editText.setText("dnfjdsfdnfdlsfldfkfdkfj กสาด่กสห่ดสกห่ดากหสด่ากหสด");
+        layoutParams = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.txtShopAddr);
+        editText.setLayoutParams(layoutParams);
+
+        ImageView imageViewFooter = cluster.findViewById(R.id.imgFooter);
+        imageViewFooter.setImageResource(R.mipmap.ic_launcher_foreground);
+        layoutParams = (RelativeLayout.LayoutParams) imageViewFooter.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.editText);
+        imageViewFooter.setLayoutParams(layoutParams);
+        imageViewFooter.setAdjustViewBounds(true);
+
+        TextView txtFooter = cluster.findViewById(R.id.txtFooter);
+        layoutParams = (RelativeLayout.LayoutParams) txtFooter.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        txtFooter.setLayoutParams(layoutParams);
+
+        cluster.setLayoutParams(
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                                                RelativeLayout.LayoutParams.MATCH_PARENT));
+
+        cluster.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        cluster.layout(0, 0, cluster.getMeasuredWidth(), cluster.getMeasuredHeight());
+
+        Log.d(TAG, "cluster.getMeasuredWidth(): " + cluster.getMeasuredWidth());
+        Log.d(TAG, "cluster.getMeasuredHeight(): " + cluster.getMeasuredHeight());
+
+        final Bitmap clusterBitmap = Bitmap.createBitmap(cluster.getMeasuredWidth(),
+                                                         cluster.getMeasuredHeight(),
+                                                         Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(clusterBitmap);
+        cluster.draw(canvas);
+
+        return clusterBitmap;
+    }
+
+    public Bitmap createImage(Context context) {
+        Log.i(TAG, "createImage()");
+
+//        int width = 300;
+//        int height = 400;
+//        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(bitmap);
+//
+//        Paint paint = new Paint();
+//        paint.setColor(Color.BLACK);
+//        paint.setStyle(Paint.Style.FILL);
+//        canvas.drawPaint(paint);
+//
+//        Bitmap logo = BitmapFactory.decodeResource(getResources(),
+//                                                   R.mipmap.ic_launcher_round);
+//        Log.d(TAG, "createImage: logo: " + logo);
+//        Matrix matrix = new Matrix();
+//        matrix.postScale(50.0f, 20.0f);
+//
+//        Bitmap resizeBitmap = Bitmap.createBitmap(logo,0,0,logo.getHeight(),logo.getWidth(),matrix,false);
+//
+//        canvas.drawBitmap(resizeBitmap, 50, 20, null);
+//
+//        paint.setColor(Color.WHITE);
+//        paint.setAntiAlias(true);
+//        paint.setTextSize(14.f);
+//        paint.setTextAlign(Paint.Align.CENTER);
+//        canvas.drawText("Hello Android!", (width / 2.f), (height / 2.f), paint);
+
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.receipt, null);
+
+        return getScreenShot(view);
     }
 
 //    private void shareImage(File file) {
