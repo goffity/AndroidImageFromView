@@ -3,6 +3,7 @@
     <string name="textview_shop">Shop 1</string>
     <string name="btn_create_img">Create Image</string>
 
+    <string name="textedit_shop_th">รายละเอียดร้านค้า รายละเอียดร้านค้า รายละเอียดร้านค้า รายละเอียดร้านค้า รายละเอียดร้านค้า รายละเอียดร้านค้า</string>
     <string name="textview_shop_th">ร้านค้าที่ 1</string>
     <string name="textview_shop_addr_th">ที่อยู่ร้านค้าที่ 1</string>
 </resources>

@@ -43,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
         button = findViewById(R.id.button);
         btnCreateImage = findViewById(R.id.btnCreateImage);
+
+        final String timeStamp = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(
+                new Date());
+
+        final String fileName = "Screenshots_" + timeStamp + ".png";
+
+        store(createClusterBitmap(getApplicationContext()), fileName);
     }
 
     @Override
@@ -156,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         textViewShopAddr.setText(getResources().getString(R.string.textview_shop_addr_th));
 
         EditText editText = cluster.findViewById(R.id.editText);
-        editText.setText("dnfjdsfdnfdlsfldfkfdkfj กสาด่กสห่ดสกห่ดากหสด่ากหสด");
+        editText.setText(getResources().getString(R.string.textedit_shop_th));
         layoutParams = (RelativeLayout.LayoutParams) editText.getLayoutParams();
         layoutParams.addRule(RelativeLayout.BELOW, R.id.txtShopAddr);
         editText.setLayoutParams(layoutParams);
@@ -194,56 +201,4 @@ public class MainActivity extends AppCompatActivity {
 
         return clusterBitmap;
     }
-
-    public Bitmap createImage(Context context) {
-        Log.i(TAG, "createImage()");
-
-//        int width = 300;
-//        int height = 400;
-//        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(bitmap);
-//
-//        Paint paint = new Paint();
-//        paint.setColor(Color.BLACK);
-//        paint.setStyle(Paint.Style.FILL);
-//        canvas.drawPaint(paint);
-//
-//        Bitmap logo = BitmapFactory.decodeResource(getResources(),
-//                                                   R.mipmap.ic_launcher_round);
-//        Log.d(TAG, "createImage: logo: " + logo);
-//        Matrix matrix = new Matrix();
-//        matrix.postScale(50.0f, 20.0f);
-//
-//        Bitmap resizeBitmap = Bitmap.createBitmap(logo,0,0,logo.getHeight(),logo.getWidth(),matrix,false);
-//
-//        canvas.drawBitmap(resizeBitmap, 50, 20, null);
-//
-//        paint.setColor(Color.WHITE);
-//        paint.setAntiAlias(true);
-//        paint.setTextSize(14.f);
-//        paint.setTextAlign(Paint.Align.CENTER);
-//        canvas.drawText("Hello Android!", (width / 2.f), (height / 2.f), paint);
-
-        LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.receipt, null);
-
-        return getScreenShot(view);
-    }
-
-//    private void shareImage(File file) {
-//        Uri uri = Uri.fromFile(file);
-//        Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_SEND);
-//        intent.setType("image/*");
-//
-//        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
-//        intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
-//        intent.putExtra(Intent.EXTRA_STREAM, uri);
-//        try {
-//            startActivity(Intent.createChooser(intent, "Share Screenshot"));
-//        } catch (ActivityNotFoundException e) {
-//            Toast.makeText(context, "No App Available", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 }
